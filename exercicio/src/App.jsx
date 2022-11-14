@@ -23,34 +23,56 @@ function App() {
   const [inputValue, setInputValue] = useState("");
   const [filtro, setFiltro] = useState("")
 
-  // useEffect() => {
-  //   () => {
+  useEffect(() => {
+      if(tarefas.length>0){
+      const listaStringTarefa = JSON.stringify(tarefas)
+      localStorage.setItem("tarefas",listaStringTarefa)
+    }
+    },[tarefas])
 
-  //   },
-  //   []
-  // };
+  useEffect(() => {
 
-  // useEffect() => {
-  //   () => {
-
-  //   },
-  //   []
-  // };
+    const novaVariavel = JSON.parse(localStorage.getItem("tarefas"))
+      if(novaVariavel !== null){
+        setTarefa(novaVariavel)
+      }   
+  },[])
 
   const onChangeInput = (event) => {
-    console.log("aaa");
+    setInputValue(event.target.value)
   }
 
-  const criaTarefa = () => {
-    console.log("aaa");
+  const criaTarefa = (e) => {
+    const copiaTarefas = [...tarefas]
+    const novaTarefa = {
+      id: Date.now(),
+      texto: inputValue,
+      completa: false,
+      }
+    copiaTarefas.push(novaTarefa)
+    setTarefa(copiaTarefas)
+    setInputValue("")
+    
   }
 
   const selectTarefa = (id) => {
-    console.log("aaa");
+    const novaTarefaListada = tarefas.map((item)=>{
+      if(id === item.id){
+        const novaTarefa ={
+          ...item,
+          completa: !item.completa
+        } 
+        return novaTarefa
+      }else{
+        return item
+      }
+
+    })
+    setTarefa(novaTarefaListada)
   }
 
   const onChangeFilter = (event) => {
-    console.log("aaa");
+      setFiltro(event.target.value)
   }
 
 
@@ -70,7 +92,7 @@ function App() {
     <div className="App">
       <h1>Lista de tarefas</h1>
       <InputsContainer>
-        <input value={inputValue} onChange={onChangeInput} />
+        <input value={inputValue} id="inputValue" texto="inputValue" onChange={onChangeInput} placeholder="Insira a Tarefa"/>
         <button onClick={criaTarefa}>Adicionar</button>
       </InputsContainer>
       <br />
@@ -87,6 +109,7 @@ function App() {
         {listaFiltrada.map(tarefa => {
           return (
             <Tarefa
+              key={tarefa.id}
               completa={tarefa.completa}
               onClick={() => selectTarefa(tarefa.id)}
             >
